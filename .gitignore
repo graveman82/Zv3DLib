@@ -1,0 +1,15 @@
+*.[oa]
+*.obj
+*.dll
+*.exe
+*.lib
+*~
+*.layout
+*.depend
+bin/**
+intermediate/**
+lib/**
+rnd/
+tmp/
+doc_build/**
+

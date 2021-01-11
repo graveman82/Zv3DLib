@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Zv3DLib" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="..\..\..\lib\gcc\debug\libZv3DLib" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\..\intermediate\gcc\debug" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-DZV3D_DEBUG_LEVEL=3" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="..\..\..\lib\gcc\release\libZv3DLib" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\..\intermediate\gcc\release" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-DZV3D_WINDOWS" />
+			<Add directory="..\..\..\code\include" />
+		</Compiler>
+		<Unit filename="..\..\..\code\include\Zv3DDebug.h" />
+		<Unit filename="..\..\..\code\include\Zv3DEndianness.h" />
+		<Unit filename="..\..\..\code\include\Zv3DError.h" />
+		<Unit filename="..\..\..\code\include\Zv3DErrorCodes.h" />
+		<Unit filename="..\..\..\code\include\Zv3DIntTypes.h" />
+		<Unit filename="..\..\..\code\include\Zv3DSingleton.h" />
+		<Unit filename="..\..\..\code\include\Zv3DStaticAllocSingleton.h" />
+		<Unit filename="..\..\..\code\include\Zv3DUtf.h" />
+		<Unit filename="..\..\..\code\source\Zv3DDebug.cpp" />
+		<Unit filename="..\..\..\code\source\Zv3DEndianness.cpp" />
+		<Unit filename="..\..\..\code\source\Zv3DError.cpp" />
+		<Unit filename="..\..\..\code\source\Zv3DUtf16.cpp" />
+		<Unit filename="..\..\..\code\source\Zv3DUtf8.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
