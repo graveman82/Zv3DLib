@@ -44,12 +44,14 @@
 		<Unit filename="..\..\..\code\include\Zv3DError.h" />
 		<Unit filename="..\..\..\code\include\Zv3DErrorCodes.h" />
 		<Unit filename="..\..\..\code\include\Zv3DIntTypes.h" />
+		<Unit filename="..\..\..\code\include\Zv3DIntegralParse.h" />
 		<Unit filename="..\..\..\code\include\Zv3DSingleton.h" />
 		<Unit filename="..\..\..\code\include\Zv3DStaticAllocSingleton.h" />
 		<Unit filename="..\..\..\code\include\Zv3DUtf.h" />
 		<Unit filename="..\..\..\code\source\Zv3DDebug.cpp" />
 		<Unit filename="..\..\..\code\source\Zv3DEndianness.cpp" />
 		<Unit filename="..\..\..\code\source\Zv3DError.cpp" />
+		<Unit filename="..\..\..\code\source\Zv3DIntegralParse.cpp" />
 		<Unit filename="..\..\..\code\source\Zv3DUtf16.cpp" />
 		<Unit filename="..\..\..\code\source\Zv3DUtf8.cpp" />
 		<Extensions>
