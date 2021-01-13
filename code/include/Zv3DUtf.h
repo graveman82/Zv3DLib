@@ -86,7 +86,8 @@ ErrorCode ToUtf8(void* dstBuf, U32 dstSize, U32 cp, U32* dstSizeNeeded);
  *  @param cp variable where the Unicode code point will be stored.
  *  @param srcBuf source buffer (with Unicode encoded positions).
  *  @param srcSize the size of the source buffer.
- *  @param srcReadBytes [out] (optional parameter) Pointer to a variable where the number of bytes read will be stored.
+ *  @param srcReadBytes [out] (optional parameter) Pointer to a variable where the number of bytes read
+ * will be stored.
  *  @return kERRC_NO, kERRC_NOT_ENOUGH_DATA, kERRC_INVALID_PTR.
  */
 ErrorCode FromUtf8(U32& cp, const void* srcBuf, U32 srcSize, U32* srcReadBytes);

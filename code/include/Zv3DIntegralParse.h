@@ -51,13 +51,14 @@ of them. I as an author will never ask you to open your source code even it unde
 #define ZV3D_INTEGRAL_PARSE_H
 
 #include <string>
+#include "Zv3DIntTypes.h"
 
 namespace Zv3D {
 
-bool ParseNumber(const char* s, int32_t& i_result, double* d_result = 0);
-bool ParseNumber(const std::string& s, int32_t& i_result, double* d_result = 0);
-bool ParseHex(const char* s, uint32_t& h_result);
-bool ParseHex(const std::string& s, uint32_t& h_result);
+bool ParseNumber(const char* s, S32& i_result, double* d_result = 0);
+bool ParseNumber(const std::string& s, S32& i_result, double* d_result = 0);
+bool ParseHex(const char* s, U32& h_result);
+bool ParseHex(const std::string& s, U32& h_result);
 bool ParseBoolean(const char* s, bool& b_result);
 bool ParseBoolean(const std::string& s, bool& b_result);
 

@@ -55,7 +55,7 @@ typedef std::string::size_type CharCount;
 
 //-----------------------------------------------------------------------------
 template <typename T>
-T TenPower(int32_t exp) {
+T TenPower(S32 exp) {
     T b = 1;
     if (0 == exp) return T(1);
     else if (exp > 0) {
@@ -69,9 +69,9 @@ T TenPower(int32_t exp) {
 
 
 //-----------------------------------------------------------------------------
-uint32_t SixteenPower(uint32_t exp) {
-    uint32_t b = 1;
-    if (0 == exp) return uint32_t(1);
+U32 SixteenPower(U32 exp) {
+    U32 b = 1;
+    if (0 == exp) return U32(1);
     while (exp--) b *= 16;
     return b;
 }
@@ -120,17 +120,17 @@ static int CharToDigit(char ch) {
 }
 
 //-----------------------------------------------------------------------------
-bool ParseNumber(const char* s, int32_t& i_result, double* d_result) {
+bool ParseNumber(const char* s, S32& i_result, double* d_result) {
     static std::string buf;
     buf = s;
     return ParseNumber(buf, i_result, d_result);
 }
 
 //-----------------------------------------------------------------------------
-bool ParseNumber(const std::string& s, int32_t& i_result, double* d_result) {
+bool ParseNumber(const std::string& s, S32& i_result, double* d_result) {
     CharCount len = s.length();
     CharIndex unsigned_start = 0;
-    int32_t sign = 1;
+    S32 sign = 1;
 
     if (!len)
         return false;
@@ -191,11 +191,11 @@ bool ParseNumber(const std::string& s, int32_t& i_result, double* d_result) {
     }
 
     // int part
-    int32_t int_part = 0;
+    S32 int_part = 0;
     while (int_start < int_end && s[int_start] == '0') ++int_start;
     int digit_count = int_end - int_start;
     while (digit_count) {
-        int_part += TenPower<int32_t>(digit_count-- - 1) * CharToDigit(s[int_start++]);
+        int_part += TenPower<S32>(digit_count-- - 1) * CharToDigit(s[int_start++]);
     }
     i_result = int_part * sign;
 
@@ -214,14 +214,14 @@ bool ParseNumber(const std::string& s, int32_t& i_result, double* d_result) {
 }
 
 //-----------------------------------------------------------------------------
-bool ParseHex(const char* s, uint32_t& h_result) {
+bool ParseHex(const char* s, U32& h_result) {
     static std::string buf;
     buf = s;
     return ParseHex(buf, h_result);
 }
 
 //-----------------------------------------------------------------------------
-bool ParseHex(const std::string& s, uint32_t& h_result) {
+bool ParseHex(const std::string& s, U32& h_result) {
     CharCount len = s.length();
     CharIndex digits_start = 0;
 
@@ -249,8 +249,8 @@ bool ParseHex(const std::string& s, uint32_t& h_result) {
     CharIndex hex_end = len;
     CharCount digit_count = hex_end - hex_start;
     if (0 == digit_count) return false;
-    uint32_t hex_value = 0;
-    int32_t exp = 0;
+    U32 hex_value = 0;
+    S32 exp = 0;
     while (digit_count) {
         hex_value += SixteenPower(exp++) * CharToDigit(s[hex_end - 1]);
     }

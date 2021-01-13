@@ -68,10 +68,7 @@ static bool Utf16_makeSurrogates(U16& s1, U16& s2, U32 cp) {
 //-----------------------------------------------------------------------------
 ErrorCode ToUtf16(void* dstBuf, U32 dstSize, U32 cp, U32* dstSizeNeeded, EndianType endianType) {
     ErrorInfo& errorInfo = ErrorInfo::sErrorInfo;
-    errorInfo.SetSource("Zv3D::ToUtf16()");
-    errorInfo.SetApi(kERRAPI_Zv3D);
-    errorInfo.SetLevel(kERRL_ERROR);
-    errorInfo.SetCode(kERRC_NO);
+    errorInfo.SetDefaults("Zv3D::ToUtf16()");
 
     U8* dstBufU8 = reinterpret_cast<U8*>(dstBuf);
 
@@ -89,29 +86,22 @@ ErrorCode ToUtf16(void* dstBuf, U32 dstSize, U32 cp, U32* dstSizeNeeded, EndianT
         Utf16_makeSurrogates(s[0], s[1], cp);
 
         ZV3D_ASSERT_HIGH(dstBuf, "");
-        if (!dstBuf) {
-            errorInfo.SetLevel(kERRL_FATAL);
-            errorInfo.SetCode(kERRC_INVALID_PTR);
-            errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+        if (!dstBuf) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_INVALID_PTR, kERRL_FATAL);
             errorInfo.SetMessage("Its need to turn to debug build and to debug code properly");
-            errorInfo.errorInfoStack().push(errorInfo);
-            return errorInfo.code();
+            return errorInfo.PushInStack();
         }
 
-        if (!writeBuiltin(dstBufU8, dstSize, s[0], endianType)) {
-            errorInfo.SetCode(kERRC_NOT_ENOUGH_BUF_SPACE);
-            errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+        if (!writeBuiltin(dstBufU8, dstSize, s[0], endianType)) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE,
+                kERRC_NOT_ENOUGH_BUF_SPACE);
             errorInfo.SetMessage("Not enough destination buffer size(%u bytes), %u bytes required",
                                   dstSize, dstSizeNeeded);
-            errorInfo.errorInfoStack().push(errorInfo);
-            return errorInfo.code();
+            return errorInfo.PushInStack();
         }
-        if (!writeBuiltin(dstBufU8, dstSize, s[1], endianType)) {
-            errorInfo.SetCode(kERRC_NOT_ENOUGH_BUF_SPACE);
-            errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+        if (!writeBuiltin(dstBufU8, dstSize, s[1], endianType)) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE,
+                kERRC_NOT_ENOUGH_BUF_SPACE);
             errorInfo.SetMessage("Not enough destination buffer size(%u bytes), %u bytes required",
                                   dstSize, dstSizeNeeded);
-            errorInfo.errorInfoStack().push(errorInfo);
+            return errorInfo.PushInStack();
         }
     }
     else {
@@ -125,21 +115,16 @@ ErrorCode ToUtf16(void* dstBuf, U32 dstSize, U32 cp, U32* dstSizeNeeded, EndianT
         }
 
         ZV3D_ASSERT_HIGH(dstBuf, "");
-        if (!dstBuf) {
-            errorInfo.SetLevel(kERRL_FATAL);
-            errorInfo.SetCode(kERRC_INVALID_PTR);
-            errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+        if (!dstBuf) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_INVALID_PTR, kERRL_FATAL);
             errorInfo.SetMessage("Its need to turn to debug build and to debug code properly");
-            errorInfo.errorInfoStack().push(errorInfo);
-            return errorInfo.code();
+            return errorInfo.PushInStack();
         }
 
-        if (!writeBuiltin(dstBufU8, dstSize, U16(cp), endianType)) {
-            errorInfo.SetCode(kERRC_NOT_ENOUGH_BUF_SPACE);
-            errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+        if (!writeBuiltin(dstBufU8, dstSize, U16(cp), endianType)) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE,
+                kERRC_NOT_ENOUGH_BUF_SPACE);
             errorInfo.SetMessage("Not enough destination buffer size(%u bytes), %u bytes required",
                                   dstSize, dstSizeNeeded);
-            errorInfo.errorInfoStack().push(errorInfo);
+            return errorInfo.PushInStack();
         }
     }
 
@@ -149,40 +134,29 @@ ErrorCode ToUtf16(void* dstBuf, U32 dstSize, U32 cp, U32* dstSizeNeeded, EndianT
 //-----------------------------------------------------------------------------
 ErrorCode FromUtf16(U32& cp, const void* srcBuf, U32 srcSize, U32* srcReadBytes, EndianType endianType) {
     ErrorInfo& errorInfo = ErrorInfo::sErrorInfo;
-    errorInfo.SetSource("Zv3D::FromUtf16()");
-    errorInfo.SetApi(kERRAPI_Zv3D);
-    errorInfo.SetLevel(kERRL_ERROR);
-    errorInfo.SetCode(kERRC_NO);
+    errorInfo.SetDefaults("Zv3D::FromUtf16()");
 
     ZV3D_ASSERT_HIGH(srcBuf, "");
-    if (!srcBuf) {
-        errorInfo.SetLevel(kERRL_FATAL);
-        errorInfo.SetCode(kERRC_INVALID_PTR);
-        errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+    if (!srcBuf) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_INVALID_PTR, kERRL_FATAL);
         errorInfo.SetMessage("Its need to turn to debug build and to debug code properly");
-        errorInfo.errorInfoStack().push(errorInfo);
-        return errorInfo.code();
+        return errorInfo.PushInStack();
     }
 
     const U8* srcBufU8 = reinterpret_cast<const U8*>(srcBuf);
     const U8* const srcBufU80 = srcBufU8;
 
     U16 s1;
-    if (!readBuiltin(srcBufU8, srcSize, s1, endianType)) {
-        errorInfo.SetCode(kERRC_NOT_ENOUGH_DATA);
-        errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+    if (!readBuiltin(srcBufU8, srcSize, s1, endianType)) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE,
+            kERRC_NOT_ENOUGH_DATA);
         errorInfo.SetMessage("Not enough data in source buffer (source size: %u bytes)", srcSize);
-        errorInfo.errorInfoStack().push(errorInfo);
-        return errorInfo.code();
+        return errorInfo.PushInStack();
     }
     if ((s1 & 0xFC00) == 0xD800) {
         U16 s2;
-        if (!readBuiltin(srcBufU8, srcSize, s2, endianType)) {
-            errorInfo.SetCode(kERRC_NOT_ENOUGH_DATA);
-            errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+        if (!readBuiltin(srcBufU8, srcSize, s2, endianType)) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE,
+                kERRC_NOT_ENOUGH_DATA);
             errorInfo.SetMessage("Not enough data in source buffer (source size: %u bytes)", srcSize);
-            errorInfo.errorInfoStack().push(errorInfo);
-            return errorInfo.code();
+            return errorInfo.PushInStack();
         }
         cp = 0x10000 + ((U32(s1 - 0xD800)) << 10) + U32(s2 - 0xDC00);
     }
