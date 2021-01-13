@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of Zv3D (Zv3D game engine modules library).
-For the latest info, see http://github.com/graveman82/creativemind
+For the latest info, see http://github.com/graveman82/zv3dlib
 
 Copyright (C) 2012-2021 Marat Sungatullin.
 This program is distributed under a dual-licensing scheme. You can use any
@@ -64,7 +64,7 @@ enum Utf16Bom {
 };
 
 //-----------------------------------------------------------------------------
-/** @brief Encodes unicode code point with Utf8 format and stores result in a buffer.
+/** @brief Encodes unicode code point with UTF-8 format and stores result in a buffer.
  *  @param dstBuf destination buffer.
  *  @param dstSize size of destination buffer in bytes.
  *  @param cp Unicode code point.
@@ -93,7 +93,7 @@ ErrorCode FromUtf8(U32& cp, const void* srcBuf, U32 srcSize, U32* srcReadBytes);
 
 //-----------------------------------------------------------------------------
 //! Returns the length of a null-terminated UTF-8 string.
-U32 utf8len(const U8* str);
+U32 Utf8Len(const U8* str);
 
 //-----------------------------------------------------------------------------
 /** @brief Encodes unicode code point with Utf16 format and stores result in a buffer.

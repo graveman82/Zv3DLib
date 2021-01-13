@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of Zv3D (Zv3D game engine modules library).
-For the latest info, see http://github.com/graveman82/creativemind
+For the latest info, see http://github.com/graveman82/zv3dlib
 
 Copyright (C) 2012-2021 Marat Sungatullin.
 This program is distributed under a dual-licensing scheme. You can use any
@@ -41,91 +41,69 @@ of them. I as an author will never ask you to open your source code even it unde
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-
-
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-
-#include "Zv3DError.h"
+#ifndef ZV3D_RANGE_H_
+#define ZV3D_RANGE_H_
 
 namespace Zv3D {
 
 //-----------------------------------------------------------------------------
-std::stack<ErrorInfo> ErrorInfo::sErrorInfoStack_;
-ErrorInfo ErrorInfo::sErrorInfo;
+
+template <typename T>
+class Range {
+public:
+    enum BoundaryType { kBT_Exclude, kBT_Include };
+    struct Boundary {
+        Boundary(T value = 0, BoundaryType boundary_type = kBT_Include);
+
+        T value;
+        BoundaryType boundary_type;
+    };
+
+    Range(T low_val  = 0, BoundaryType low_type  = kBT_Include,
+          T high_val = 0, BoundaryType high_type = kBT_Include);
+
+    bool in(T point) const;
+
+    Boundary low;
+    Boundary high;
+};
 
 //-----------------------------------------------------------------------------
-ErrorInfo::ErrorInfo() :
-    level_(kERRL_ERROR),
-    code_(kERRC_UNKNOWN),
-    api_(kERRAPI_Zv3D),
-    line_(-1) {
-    filename_[0] = 0;
-    message_[0] = 0;
-    source_[0] = 0;
+template <typename T>
+inline Range<T>::Boundary::Boundary(T value, BoundaryType boundary_type) :
+    value(value), boundary_type(boundary_type) {
 }
 
 //-----------------------------------------------------------------------------
-void ErrorInfo::SetApi(ErrorApi api) {
-    api_ = api;
+template <typename T>
+inline Range<T>::Range(T low_val, BoundaryType low_type,
+                       T high_val, BoundaryType high_type) :
+    low(low_val, low_type),
+    high(high_val, high_type) {
 }
 
 //-----------------------------------------------------------------------------
-void ErrorInfo::SetLevel(ErrorLevel level) {
-    level_ = level;
+template <typename T>
+inline bool Range<T>::in(T point) const {
+    if (kBT_Include == low.boundary_type &&
+        kBT_Include == high.boundary_type) {
+        return (point >= low.value && point <= high.value);
+    }
+    else if (kBT_Include == low.boundary_type &&
+             kBT_Exclude == high.boundary_type) {
+        return (point >= low.value && point < high.value);
+    }
+    else if (kBT_Exclude == low.boundary_type &&
+             kBT_Include == high.boundary_type) {
+        return (point > low.value && point <= high.value);
+    }
+    else if (kBT_Exclude == low.boundary_type &&
+             kBT_Exclude == high.boundary_type) {
+        return (point > low.value && point < high.value);
+    }
+    return false;
 }
 
-//-----------------------------------------------------------------------------
-void ErrorInfo::SetCode(ErrorCode code){
-    code_ = code;
-}
-
-//-----------------------------------------------------------------------------
-void ErrorInfo::SetMessage(const char* fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    vsnprintf(&message_[0], kMSG_BUFSIZE, fmt, ap);
-    va_end(ap);
-}
-
-//-----------------------------------------------------------------------------
-void ErrorInfo::SetSource(const char* src) {
-    strncpy(&source_[0], src, kSRC_BUFSIZE);
-    source_[kSRC_BUFSIZE - 1] = 0;
-}
-
-//-----------------------------------------------------------------------------
-void ErrorInfo::SetFilenameAndLine(const char* filename, int line) {
-    strncpy(&filename_[0], filename, kFNAME_BUFSIZE);
-    filename_[kFNAME_BUFSIZE - 1] = 0;
-    line_ = line;
-}
-
-//-----------------------------------------------------------------------------
-void ErrorInfo::SetFnameLnCodeLevApi(const char* filename, int line,
-                              ErrorCode code, ErrorLevel level,
-                              ErrorApi api) {
-    SetFilenameAndLine(filename, line);
-    SetCode(code);
-    SetLevel(level);
-    SetApi(api);
-}
-
-//-----------------------------------------------------------------------------
-void ErrorInfo::SetDefaults(const char* src) {
-    level_ = kERRL_ERROR;
-    code_ = kERRC_NO;
-    api_ = kERRAPI_Zv3D;
-    line_ = -1;
-    filename_[0] = 0;
-    message_[0] = 0;
-    SetSource(src);
-}
-
-//-----------------------------------------------------------------------------
-ErrorCode ErrorInfo::PushInStack() {
-    errorInfoStack().push(*this);
-    return code();
-}
 } // end of Zv3D
+#endif // ZV3D_RANGE_H_
+

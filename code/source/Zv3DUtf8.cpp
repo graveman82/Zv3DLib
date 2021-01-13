@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of Zv3D (Zv3D game engine modules library).
-For the latest info, see http://github.com/graveman82/creativemind
+For the latest info, see http://github.com/graveman82/zv3dlib
 
 Copyright (C) 2012-2021 Marat Sungatullin.
 This program is distributed under a dual-licensing scheme. You can use any
@@ -45,29 +45,41 @@ of them. I as an author will never ask you to open your source code even it unde
 #include "Zv3DError.h"
 #include "Zv3DDebug.h"
 #include "Zv3DEndianness.h"
+#include "Zv3DPair.h"
+#include "Zv3DRange.h"
+#include "Zv3DSingleton.h"
+
+#include <vector>
 
 namespace Zv3D {
 
 //-----------------------------------------------------------------------------
+// Unicode point range and octets count needed to store values from it.
+static const std::vector<Pair<Range<U32>, U32>> s_range_and_octets = {
+    Pair<Range<U32>, U32>(Range<U32>(0,          Range<U32>::kBT_Include, 0x0000007F, Range<U32>::kBT_Include), 1),
+    Pair<Range<U32>, U32>(Range<U32>(0x00000080, Range<U32>::kBT_Include, 0x000007FF, Range<U32>::kBT_Include), 2),
+    Pair<Range<U32>, U32>(Range<U32>(0x00000800, Range<U32>::kBT_Include, 0x0000FFFF, Range<U32>::kBT_Include), 3),
+    Pair<Range<U32>, U32>(Range<U32>(0x00010000, Range<U32>::kBT_Include, 0x0010FFFF, Range<U32>::kBT_Include), 4),
+};
+
+//-----------------------------------------------------------------------------
+static U32 findOctetCount(U32 cp) {
+    for (U32 i = 0; i < s_range_and_octets.size(); ++i) {
+        if (s_range_and_octets[i].first.in(cp))
+            return s_range_and_octets[i].second;
+    }
+    return 0;
+}
+
+//-----------------------------------------------------------------------------
 ErrorCode ToUtf8(void* dstBuf, U32 dstSize, U32 cp, U32* dstSizeNeeded) {
     ErrorInfo& errorInfo = ErrorInfo::sErrorInfo;
-    errorInfo.SetSource("Zv3D::ToUtf8()");
-    errorInfo.SetApi(kERRAPI_Zv3D);
-    errorInfo.SetLevel(kERRL_ERROR);
-    errorInfo.SetCode(kERRC_NO);
+    errorInfo.SetDefaults("Zv3D::ToUtf8()");
 
-    // find num of octets
-    U32 cOctets = 0;
-    if (0 <= cp && cp < 0x00000080) cOctets = 1;
-    else if (0x00000080 <= cp && cp < 0x00000800) cOctets = 2;
-    else if (0x00000800 <= cp && cp < 0x00010000) cOctets = 3;
-    else if (0x00010000 <= cp && cp <= 0x0010FFFF) cOctets = 4;
-    else {
-        errorInfo.SetCode(kERRC_VALUE_OUT_OF_RANGE);
-        errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+    U32 cOctets = findOctetCount(cp);
+    if (0 == cOctets) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_VALUE_OUT_OF_RANGE);
         errorInfo.SetMessage("Unicode point(%x) passed is out of range", cp);
-        errorInfo.errorInfoStack().push(errorInfo);
-        return errorInfo.code();
+        return errorInfo.PushInStack();
     }
 
     if (dstSizeNeeded != 0) {
@@ -81,22 +93,16 @@ ErrorCode ToUtf8(void* dstBuf, U32 dstSize, U32 cp, U32* dstSizeNeeded) {
     }
 
     // check destination buffer size
-    if (dstSize < cOctets) {
-        errorInfo.SetCode(kERRC_NOT_ENOUGH_BUF_SPACE);
-        errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+    if (dstSize < cOctets) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_NOT_ENOUGH_BUF_SPACE);
         errorInfo.SetMessage("Not enough destination buffer size(%u bytes), %u bytes required",
                               dstSize, cOctets);
-        errorInfo.errorInfoStack().push(errorInfo);
-        return errorInfo.code();
+        return errorInfo.PushInStack();
     }
 
-    if (!dstBuf) {
-        errorInfo.SetLevel(kERRL_FATAL);
-        errorInfo.SetCode(kERRC_INVALID_PTR);
-        errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+    ZV3D_ASSERT_HIGH(dstBuf, "");
+    if (!dstBuf) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_INVALID_PTR, kERRL_FATAL);
         errorInfo.SetMessage("Its need to turn to debug build and to debug code properly");
-        errorInfo.errorInfoStack().push(errorInfo);
-        return errorInfo.code();
+        return errorInfo.PushInStack();
     }
 
     // fill the buffer
@@ -118,27 +124,17 @@ ErrorCode ToUtf8(void* dstBuf, U32 dstSize, U32 cp, U32* dstSizeNeeded) {
 //-----------------------------------------------------------------------------
 ErrorCode FromUtf8(U32& cp, const void* srcBuf, U32 srcSize, U32* srcReadBytes) {
     ErrorInfo& errorInfo = ErrorInfo::sErrorInfo;
-    errorInfo.SetSource("Zv3D::FromUtf8()");
-    errorInfo.SetApi(kERRAPI_Zv3D);
-    errorInfo.SetLevel(kERRL_ERROR);
-    errorInfo.SetCode(kERRC_NO);
+    errorInfo.SetDefaults("Zv3D::FromUtf8()");
 
     ZV3D_ASSERT_HIGH(srcBuf, "");
-    if (!srcBuf) {
-        errorInfo.SetLevel(kERRL_FATAL);
-        errorInfo.SetCode(kERRC_INVALID_PTR);
-        errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+    if (!srcBuf) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_INVALID_PTR, kERRL_FATAL);
         errorInfo.SetMessage("Its need to turn to debug build and to debug code properly");
-        errorInfo.errorInfoStack().push(errorInfo);
-        return errorInfo.code();
+        return errorInfo.PushInStack();
     }
 
-    if (0 == srcSize) {
-        errorInfo.SetCode(kERRC_NOT_ENOUGH_DATA);
-        errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+    if (0 == srcSize) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_NOT_ENOUGH_DATA);
         errorInfo.SetMessage("Not enough data in source buffer (source size: %u bytes)", srcSize);
-        errorInfo.errorInfoStack().push(errorInfo);
-        return errorInfo.code();
+        return errorInfo.PushInStack();
     }
 
     const U8* srcBufU8 = reinterpret_cast<const U8*>(srcBuf);
@@ -157,13 +153,10 @@ ErrorCode FromUtf8(U32& cp, const void* srcBuf, U32 srcSize, U32* srcReadBytes) 
         }
     }
 
-    if (cOctets > srcSize) {
-        errorInfo.SetCode(kERRC_NOT_ENOUGH_DATA);
-        errorInfo.SetFilenameAndLine(ZV3D_FILE_AND_LINE);
+    if (cOctets > srcSize) { errorInfo.SetFnameLnCodeLevApi(ZV3D_FILE_AND_LINE, kERRC_NOT_ENOUGH_DATA);
         errorInfo.SetMessage("Not enough data in source buffer (source size: %u bytes), required %u bytes",
                              srcSize, cOctets);
-        errorInfo.errorInfoStack().push(errorInfo);
-        return errorInfo.code();
+        return errorInfo.PushInStack();
     }
 
     // fill cp
@@ -179,7 +172,7 @@ ErrorCode FromUtf8(U32& cp, const void* srcBuf, U32 srcSize, U32* srcReadBytes) 
 }
 
 //-----------------------------------------------------------------------------
-U32 utf8len(const U8* str) {
+U32 Utf8Len(const U8* str) {
     if (!str) return 0;
     U32 len = 0;
     while (*str++) ++len;

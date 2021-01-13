@@ -100,6 +100,14 @@ public:
     /** @brief Sets source file name and line number where error occurred. */
     void SetFilenameAndLine(const char* filename, int line);
 
+    void SetFnameLnCodeLevApi(const char* filename, int line,
+                              ErrorCode code, ErrorLevel level = kERRL_ERROR,
+                              ErrorApi api = kERRAPI_Zv3D);
+    /// Use it at beginning of function body.
+    void SetDefaults(const char* src);
+    ErrorCode PushInStack();
+
+
      ErrorLevel level()    const { return level_; }
       ErrorCode code()     const { return code_; }
        ErrorApi api()      const { return api_; }
